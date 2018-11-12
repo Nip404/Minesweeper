@@ -56,6 +56,11 @@ def menu():
         pygame.draw.rect(screen,standard if not mouse.colliderect(button2) else onHover,button2,0)
         pygame.draw.rect(screen,standard if not mouse.colliderect(button3) else onHover,button3,0)
         pygame.draw.rect(screen,standard if not mouse.colliderect(button4) else onHover,button4,0)
+        
+        pygame.draw.rect(screen,(0,0,0),button1,2)
+        pygame.draw.rect(screen,(0,0,0),button2,2)
+        pygame.draw.rect(screen,(0,0,0),button3,2)
+        pygame.draw.rect(screen,(0,0,0),button4,2)
 
         screen.blit(head,head.get_rect(center=[screen.get_width()/2,screen.get_height()/10]))
         screen.blit(version,version.get_rect(center=[screen.get_width()/2,screen.get_height()/7]))
