@@ -2,6 +2,9 @@ import pygame
 import random
 import time
 import numpy
+import sys
+
+sys.setrecursionlimit(10000)
 
 class Square:
     def __init__(self,state=0):
@@ -26,6 +29,7 @@ class Square:
 
 class Grid:
     colours = {1:(0,0,255),2:(50,205,50),3:(255,140,0),4:(255,0,0),5:(148,0,211),6:(220,20,60),7:(0,206,209),8:(255,105,180)}
+    # min = 1, max = 1000, default = 8, lower = harder
     mine_distribution = 8
     
     def __init__(self,surf_size,square_size,blit_dest=[0,0]):
@@ -85,11 +89,11 @@ class Grid:
         elif button == 3:
             if self.flags > 0 and not self.grid[gridRef[1]][gridRef[0]].flagged:
                 self.grid[gridRef[1]][gridRef[0]].flagged = True
-                self.flags -= 1
             elif self.grid[gridRef[1]][gridRef[0]].flagged:
                 self.grid[gridRef[1]][gridRef[0]].flagged = False
-                self.flags += 1
-        
+
+            self.flags = self.minesCount - sum(sum(i.flagged for i in row) for row in self.grid)
+
     def coords_to_gridRef(self,pos):
         return [int((pos[i]-self.blit_dest[i])//self.size) for i in range(2)] if all(x < self.resolution[p] for p,x in enumerate([int((pos[i]-self.blit_dest[i])//self.size) for i in range(2)])) else None
 
@@ -152,10 +156,14 @@ class Banner:
         self.surf.blit(foot,foot.get_rect(center=[self.surf.get_width()/2,self.surf.get_height()/7]))
 
         flg = self.h2.render(f"Flags Remaining: {self.grid.flags}/{self.grid.minesCount}",True,(0,0,0))
-        self.surf.blit(flg,flg.get_rect(center=[self.surf.get_width()/2,self.surf.get_height()/2.5]))
+        self.surf.blit(flg,flg.get_rect(center=[self.surf.get_width()/2,self.surf.get_height()/2 - 50]))
 
         tim = self.h2.render(f"Time Elapsed: {int(time.time()-self.t0)}",True,(0,0,0))
         self.surf.blit(tim,tim.get_rect(center=[self.surf.get_width()/2,self.surf.get_height()/2]))
+
+        difs = {100:"Easy",50:"Medium",25:"Hard",10:"Impossible"}
+        dif = self.h2.render(f"Difficulty: {difs[self.grid.size]}",True,(0,0,0))
+        self.surf.blit(dif,dif.get_rect(center=[self.surf.get_width()/2,self.surf.get_height()/2 + 50]))
 
     def draw(self,surf):
         surf.blit(self.surf,self.blit_dest)
